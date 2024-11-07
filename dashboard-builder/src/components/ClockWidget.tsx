@@ -2,8 +2,17 @@
 import { Component } from "react";
 import Widget from "./Widget";
 
-class ClockWidget extends Component {
-  constructor(props) {
+interface ClockWidgetProps {
+  timer: typeof setInterval;
+}
+
+interface ClockWidgetState {
+  time: string;
+}
+
+class ClockWidget extends Component<ClockWidgetProps, ClockWidgetState> {
+  timer: number | undefined = undefined;
+  constructor(props: ClockWidgetProps) {
     super(props);
     this.state = {
       time: new Date().toLocaleTimeString(),
