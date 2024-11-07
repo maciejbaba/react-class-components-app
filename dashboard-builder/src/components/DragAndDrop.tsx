@@ -1,8 +1,8 @@
-// src/components/DragAndDrop.tsx
 import { Component } from "react";
-import { DndProvider } from "react-dnd";
+import { DndProvider, useDrag, useDrop } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 
+// Define the item type
 type Item = {
   id: number;
   text: string;
@@ -13,6 +13,37 @@ interface DragAndDropState {
   items: Item[];
 }
 
+const ItemType = "ITEM"; // Define item type for drag-and-drop
+
+// DraggableItem Component
+const DraggableItem = ({ id, text, index, moveItem }: { id: number; text: string; index: number; moveItem: (draggedId: number, droppedId: number) => void }) => {
+  const [{ isDragging }, drag] = useDrag(() => ({
+    type: ItemType,
+    item: { id, index },
+    collect: (monitor) => ({
+      isDragging: monitor.isDragging(),
+    }),
+  }), [id, index]);
+
+  return (
+    <div
+      ref={drag}
+      style={{
+        padding: "16px",
+        margin: "8px",
+        backgroundColor: "#ddd",
+        cursor: "move",
+        opacity: isDragging ? 0.5 : 1,
+      }}
+    >
+      {text}
+      <br />
+      {id}
+    </div>
+  );
+};
+
+// DragAndDrop Component
 class DragAndDrop extends Component<DragAndDropProps, DragAndDropState> {
   constructor(props: DragAndDropProps) {
     super(props);
@@ -41,8 +72,14 @@ class DragAndDrop extends Component<DragAndDropProps, DragAndDropState> {
     return (
       <DndProvider backend={HTML5Backend}>
         <div>
-          {items.map((item) => (
-            <DraggableItem key={item.id} id={item.id} text={item.text} />
+          {items.map((item, index) => (
+            <DraggableItem
+              key={item.id}
+              id={item.id}
+              text={item.text}
+              index={index}
+              moveItem={this.handleDrop}
+            />
           ))}
         </div>
       </DndProvider>
@@ -50,29 +87,5 @@ class DragAndDrop extends Component<DragAndDropProps, DragAndDropState> {
   }
 }
 
-interface DraggableItemProps {
-  id: number;
-  text: string;
-}
-
-class DraggableItem extends Component<DraggableItemProps> {
-  render() {
-    const { id, text } = this.props;
-    return (
-      <div
-        style={{
-          padding: "16px",
-          margin: "8px",
-          backgroundColor: "#ddd",
-          cursor: "move",
-        }}
-      >
-        {text}
-        <br></br>
-        {id}
-      </div>
-    );
-  }
-}
-
 export default DragAndDrop;
+
