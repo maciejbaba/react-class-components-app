@@ -1,6 +1,5 @@
 // src/components/WeatherWidget.tsx
 import { Component } from "react";
-import axios from "axios";
 import Widget from "./Widget";
 import styled from "styled-components";
 
@@ -18,11 +17,15 @@ interface WeatherData {
   error: string | null;
 }
 
-class WeatherWidget extends Component<{}, WeatherData> {
+interface WeatherWidgetProps {
+  title: string;
+}
+
+class WeatherWidget extends Component<WeatherWidgetProps, WeatherData> {
   private apiUrl: string =
     "https://api.open-meteo.com/v1/forecast?latitude=52.52&longitude=13.41&current_weather=true";
 
-  constructor(props: {}) {
+  constructor(props: WeatherWidgetProps) {
     super(props);
     this.state = {
       temperature: null,
@@ -38,12 +41,13 @@ class WeatherWidget extends Component<{}, WeatherData> {
 
   fetchWeatherData = async () => {
     try {
-      const response = await axios.get(this.apiUrl);
-      const { temperature_2m, wind_speed_10m } = response.data.current_weather;
+      const response = await fetch(this.apiUrl);
+      const responseJson = await response.json();
+      const { temperature, windspeed: windSpeed } = responseJson.current_weather;
 
       this.setState({
-        temperature: temperature_2m,
-        windSpeed: wind_speed_10m,
+        temperature: temperature,
+        windSpeed: windSpeed,
         isLoading: false,
       });
     } catch (error) {
@@ -51,6 +55,7 @@ class WeatherWidget extends Component<{}, WeatherData> {
         error: "Could not fetch weather data.",
         isLoading: false,
       });
+      console.log(error);
     }
   };
 
