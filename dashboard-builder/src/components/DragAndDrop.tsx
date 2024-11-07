@@ -43,6 +43,18 @@ const DraggableItem = ({ id, text, index, moveItem }: { id: number; text: string
   );
 };
 
+// DropZone Component to handle drops and reorder items
+const DropZone = ({ children, moveItem }: { children: React.ReactNode, moveItem: (draggedId: number, droppedId: number) => void }) => {
+  const [, drop] = useDrop(() => ({
+    accept: ItemType,
+    drop: (item: { id: number, index: number }) => {
+      moveItem(item.id, item.index);
+    },
+  }), [moveItem]);
+
+  return <div ref={drop}>{children}</div>;
+};
+
 // DragAndDrop Component
 class DragAndDrop extends Component<DragAndDropProps, DragAndDropState> {
   constructor(props: DragAndDropProps) {
@@ -71,7 +83,7 @@ class DragAndDrop extends Component<DragAndDropProps, DragAndDropState> {
 
     return (
       <DndProvider backend={HTML5Backend}>
-        <div>
+        <DropZone moveItem={this.handleDrop}>
           {items.map((item, index) => (
             <DraggableItem
               key={item.id}
@@ -81,11 +93,10 @@ class DragAndDrop extends Component<DragAndDropProps, DragAndDropState> {
               moveItem={this.handleDrop}
             />
           ))}
-        </div>
+        </DropZone>
       </DndProvider>
     );
   }
 }
 
 export default DragAndDrop;
-
