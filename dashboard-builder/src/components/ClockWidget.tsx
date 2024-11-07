@@ -2,9 +2,7 @@
 import { Component } from "react";
 import Widget from "./Widget";
 
-interface ClockWidgetProps {
-  timer: typeof setInterval;
-}
+type ClockWidgetProps = object;
 
 interface ClockWidgetState {
   time: string;

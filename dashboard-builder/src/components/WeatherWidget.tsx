@@ -17,9 +17,7 @@ interface WeatherData {
   error: string | null;
 }
 
-interface WeatherWidgetProps {
-  title: string;
-}
+type WeatherWidgetProps = object;
 
 class WeatherWidget extends Component<WeatherWidgetProps, WeatherData> {
   private apiUrl: string =
@@ -43,7 +41,8 @@ class WeatherWidget extends Component<WeatherWidgetProps, WeatherData> {
     try {
       const response = await fetch(this.apiUrl);
       const responseJson = await response.json();
-      const { temperature, windspeed: windSpeed } = responseJson.current_weather;
+      const { temperature, windspeed: windSpeed } =
+        responseJson.current_weather;
 
       this.setState({
         temperature: temperature,

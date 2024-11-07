@@ -1,30 +1,37 @@
 // src/components/DragAndDrop.tsx
 import { Component } from "react";
-import { DndProvider, DragSource, DropTarget } from "react-dnd";
+import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 
-const ItemType = "ITEM";
+type Item = {
+  id: number;
+  text: string;
+};
 
-interface DragAndDropProps {}
+type DragAndDropProps = object;
 interface DragAndDropState {
-  items: string[];
+  items: Item[];
 }
 
 class DragAndDrop extends Component<DragAndDropProps, DragAndDropState> {
   constructor(props: DragAndDropProps) {
     super(props);
     this.state = {
-      items: ["Item 1", "Item 2", "Item 3"],
+      items: [
+        { id: 1, text: "Item 1" },
+        { id: 2, text: "Item 2" },
+        { id: 3, text: "Item 3" },
+      ],
     };
   }
 
-  handleDrop = (draggedId: string, droppedId: string) => {
+  handleDrop = (draggedId: number, droppedId: number) => {
     const { items } = this.state;
-    const draggedIndex = items.indexOf(draggedId);
-    const droppedIndex = items.indexOf(droppedId);
+    const draggedIndex = items.findIndex((item) => item.id === draggedId);
+    const droppedIndex = items.findIndex((item) => item.id === droppedId);
     const updatedItems = [...items];
     updatedItems.splice(draggedIndex, 1);
-    updatedItems.splice(droppedIndex, 0, draggedId);
+    updatedItems.splice(droppedIndex, 0, items[draggedIndex]);
     this.setState({ items: updatedItems });
   };
 
@@ -34,8 +41,8 @@ class DragAndDrop extends Component<DragAndDropProps, DragAndDropState> {
     return (
       <DndProvider backend={HTML5Backend}>
         <div>
-          {items.map((item, index) => (
-            <DraggableItem key={index} id={item} text={item} />
+          {items.map((item) => (
+            <DraggableItem key={item.id} id={item.id} text={item.text} />
           ))}
         </div>
       </DndProvider>
@@ -43,7 +50,12 @@ class DragAndDrop extends Component<DragAndDropProps, DragAndDropState> {
   }
 }
 
-class DraggableItem extends Component<{ id: string; text: string }> {
+interface DraggableItemProps {
+  id: number;
+  text: string;
+}
+
+class DraggableItem extends Component<DraggableItemProps> {
   render() {
     const { id, text } = this.props;
     return (
@@ -56,6 +68,8 @@ class DraggableItem extends Component<{ id: string; text: string }> {
         }}
       >
         {text}
+        <br></br>
+        {id}
       </div>
     );
   }
